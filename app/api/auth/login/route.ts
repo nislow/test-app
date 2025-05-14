@@ -13,8 +13,11 @@ const loginSchema = z.object({
 
 export async function POST(request: Request) {
   try {
+    console.log('Login API called');
     const body = await request.json()
+    console.log('Request body:', body);
     const validatedData = loginSchema.parse(body)
+    console.log('Validated data:', validatedData);
 
     // Find user by email or phone
     const user = await prisma.user.findFirst({
@@ -25,8 +28,10 @@ export async function POST(request: Request) {
         ],
       },
     })
+    console.log('User found:', user);
 
     if (!user) {
+      console.log('No user found for credentials');
       return NextResponse.json(
         { error: "Invalid credentials" },
         { status: 401 }
@@ -35,7 +40,9 @@ export async function POST(request: Request) {
 
     // Verify password
     const isValid = await verifyPassword(validatedData.password, user.password)
+    console.log('Password valid:', isValid);
     if (!isValid) {
+      console.log('Password invalid');
       return NextResponse.json(
         { error: "Invalid credentials" },
         { status: 401 }
@@ -44,10 +51,12 @@ export async function POST(request: Request) {
 
     // Create JWT token
     const token = await createToken(user.id)
+    console.log('Token created:', token);
 
     // Return user data (excluding sensitive information)
     const { password: _, ...userData } = user
 
+    console.log('Login successful, returning user data');
     return NextResponse.json(
       {
         user: userData,
@@ -57,6 +66,7 @@ export async function POST(request: Request) {
     )
   } catch (error) {
     if (error instanceof z.ZodError) {
+      console.log('Zod validation error:', error.errors);
       return NextResponse.json(
         { error: "Invalid request data", details: error.errors },
         { status: 400 }
