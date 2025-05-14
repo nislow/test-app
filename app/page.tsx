@@ -55,8 +55,8 @@ export default function LandingPage() {
               <div className="flex items-center justify-center">
                 <div className="relative h-[350px] w-full overflow-hidden rounded-xl">
                   <Image
-                    src="/school-car.svg"
-                    alt="School pickup app interface showing a school bus and map"
+                    src="/landing-illustration.png"
+                    alt="Parent dropping off child at school with car"
                     width={700}
                     height={350}
                     className="object-cover w-full h-full"
