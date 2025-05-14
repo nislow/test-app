@@ -14,6 +14,15 @@ const publicRoutes = [
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
+  // Skip static files and Next.js internals
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/favicon.ico") ||
+    pathname.match(/\.(png|jpg|jpeg|svg|gif|ico)$/)
+  ) {
+    return NextResponse.next()
+  }
+
   // Allow public routes
   if (publicRoutes.includes(pathname)) {
     return NextResponse.next()
@@ -56,8 +65,5 @@ export async function middleware(request: NextRequest) {
 
 // Configure which routes to run middleware on
 export const config = {
-  matcher: [
-    // Exclude static files and Next.js internals from middleware
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(png|jpg|jpeg|svg|gif|ico)).*)",
-  ],
+  matcher: "/:path*",
 } 
