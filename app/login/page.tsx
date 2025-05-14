@@ -38,15 +38,22 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(true)
 
+    const safeToast = (opts: { title: string; description?: string; variant?: string }) => {
+      toast({
+        ...opts,
+        variant: opts.variant === "destructive" ? "destructive" : "default"
+      })
+    }
+
     try {
       await login({
         method: loginMethod,
         email: loginMethod === "email" ? formData.email : undefined,
         phone: loginMethod === "phone" ? formData.phone : undefined,
         password: formData.password,
-      })
+      }, safeToast)
     } catch (error) {
-      toast({
+      safeToast({
         title: t("auth.loginFailed"),
         description: t("auth.loginFailedDesc"),
         variant: "destructive",

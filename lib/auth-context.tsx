@@ -14,7 +14,10 @@ interface User {
 interface AuthContextType {
   user: User | null
   loading: boolean
-  login: (data: { method: "email" | "phone"; email?: string; phone?: string; password: string }) => Promise<void>
+  login: (
+    data: { method: "email" | "phone"; email?: string; phone?: string; password: string },
+    toast?: (opts: { title: string; description?: string; variant?: string }) => void
+  ) => Promise<void>
   logout: () => void
 }
 
@@ -45,7 +48,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkAuth()
   }, [])
 
-  const login = async (data: { method: "email" | "phone"; email?: string; phone?: string; password: string }) => {
+  const login = async (
+    data: { method: "email" | "phone"; email?: string; phone?: string; password: string },
+    toast?: (opts: { title: string; description?: string; variant?: string }) => void
+  ) => {
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
@@ -62,13 +68,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { user, token } = await response.json()
 
       // Store user data and token
+      // NOTE: For production, use HTTP-only cookies for security and SSR compatibility
       localStorage.setItem("user", JSON.stringify(user))
       localStorage.setItem("token", token)
 
       setUser(user)
-      router.push("/home")
+      if (toast) {
+        toast({ title: "Login successful", variant: "default" })
+      }
+      router.push("/dashboard")
     } catch (error) {
       console.error("Login error:", error)
+      if (toast) {
+        toast({ title: "Login failed", variant: "destructive" })
+      }
       throw error
     }
   }
