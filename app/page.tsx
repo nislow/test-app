@@ -55,7 +55,7 @@ export default function LandingPage() {
               <div className="flex items-center justify-center">
                 <div className="relative h-[350px] w-full overflow-hidden rounded-xl">
                   <Image
-                    src="/placeholder.svg?height=700&width=700"
+                    src="/placeholder.svg"
                     alt="Deal app interface showing a map with a car icon"
                     fill
                     className="object-cover"
