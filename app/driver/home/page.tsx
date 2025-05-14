@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useLanguage } from "@/components/language-provider"
 import { MapComponent } from "@/components/map-component"
+import { LanguageSwitcher } from "@/components/language-switcher"
 
 export default function DriverHomePage() {
   const { t, language } = useLanguage()
@@ -20,7 +21,7 @@ export default function DriverHomePage() {
   
   useEffect(() => {
     // Simulate ride request after going online
-    let requestTimer: NodeJS.Timeout
+    let requestTimer: ReturnType<typeof setTimeout>
     
     if (isOnline) {
       requestTimer = setTimeout(() => {
@@ -33,7 +34,7 @@ export default function DriverHomePage() {
   
   useEffect(() => {
     // Countdown for ride request
-    let countdownTimer: NodeJS.Timeout
+    let countdownTimer: ReturnType<typeof setInterval>
     
     if (showRideRequest && countdown > 0) {
       countdownTimer = setInterval(() => {
@@ -139,4 +140,11 @@ export default function DriverHomePage() {
             </div>
             <Switch 
               checked={isOnline} 
-              onCheckedChange={handleToggleOnline
+              onCheckedChange={handleToggleOnline}
+            />
+          </div>
+        </div>
+      </main>
+    </div>
+  )
+}
