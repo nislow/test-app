@@ -39,8 +39,8 @@ export default function LandingPage() {
                   </h1>
                   <p className="max-w-[600px] text-gray-500 md:text-xl dark:text-gray-400">
                     {language === "en"
-                      ? "Premium ride-hailing service with trusted drivers and real-time tracking."
-                      : "خدمة توصيل متميزة مع سائقين موثوقين وتتبع في الوقت الحقيقي."}
+                      ? "Peace of mind for parents, safe journeys for students across the Kingdom."
+                      : "راحة بال للوالدين، ورحلات آمنة للطلاب في جميع أنحاء المملكة."}
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
