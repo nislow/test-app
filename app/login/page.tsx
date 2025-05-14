@@ -36,6 +36,7 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    console.log('Login form submitted');
     setLoading(true)
 
     const safeToast = (opts: { title: string; description?: string; variant?: string }) => {
@@ -46,13 +47,16 @@ export default function LoginPage() {
     }
 
     try {
+      console.log('Attempting login with:', formData, 'method:', loginMethod);
       await login({
         method: loginMethod,
         email: loginMethod === "email" ? formData.email : undefined,
         phone: loginMethod === "phone" ? formData.phone : undefined,
         password: formData.password,
       }, safeToast)
+      console.log('Login function completed');
     } catch (error) {
+      console.error('Login error caught in page:', error);
       safeToast({
         title: t("auth.loginFailed"),
         description: t("auth.loginFailedDesc"),
