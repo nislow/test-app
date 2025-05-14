@@ -2,9 +2,16 @@
 # Exit on error
 set -o errexit
 
+# Install dependencies
 npm install
-npm run build
 
-# For Prisma, we need to generate the client and run migrations
+# Generate Prisma client
 npx prisma generate
-# Note: In production, you may want to use `npx prisma migrate deploy` instead 
+
+# Run database migrations if in production
+if [ "$NODE_ENV" = "production" ]; then
+  npx prisma migrate deploy
+fi
+
+# Build the Next.js application
+npm run build 
