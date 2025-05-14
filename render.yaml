@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: school-pickup-app
+    env: node
+    buildCommand: npm install --legacy-peer-deps && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+    healthCheckPath: / 
