@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String?   @unique
+  phone         String?   @unique
+  password      String
+  name          String
+  role          UserRole  @default(PARENT)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  verified      Boolean   @default(false)
+  children      Child[]
+  ridesAsDriver Ride[]   @relation("DriverRides")
+  ridesAsParent Ride[]   @relation("ParentRides")
+  driverProfile Driver?
+  ratings       Rating[]
+  chats         Chat[]
+}
+
+model Child {
+  id        String   @id @default(cuid())
+  name      String
+  parent    User     @relation(fields: [parentId], references: [id])
+  parentId  String
+  rides     Ride[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Driver {
+  id            String   @id @default(cuid())
+  user          User     @relation(fields: [userId], references: [id])
+  userId        String   @unique
+  licenseNumber String   @unique
+  carModel      String
+  carColor      String
+  plateNumber   String   @unique
+  verified      Boolean  @default(false)
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Ride {
+  id              String     @id @default(cuid())
+  status          RideStatus @default(SCHEDULED)
+  pickupLocation  String
+  dropoffLocation String
+  date            DateTime
+  time            String
+  notes           String?
+  cost           Float?
+  child          Child      @relation(fields: [childId], references: [id])
+  childId        String
+  parent         User       @relation("ParentRides", fields: [parentId], references: [id])
+  parentId       String
+  driver         User?      @relation("DriverRides", fields: [driverId], references: [id])
+  driverId       String?
+  rating         Rating?
+  chat           Chat?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+model Rating {
+  id        String   @id @default(cuid())
+  rating    Int      @default(5)
+  comment   String?
+  ride      Ride     @relation(fields: [rideId], references: [id])
+  rideId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
+}
+
+model Chat {
+  id        String    @id @default(cuid())
+  ride      Ride      @relation(fields: [rideId], references: [id])
+  rideId    String    @unique
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+  messages  Message[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  content   String
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  chatId    String
+  createdAt DateTime @default(now())
+}
+
+enum UserRole {
+  ADMIN
+  PARENT
+  DRIVER
+}
+
+enum RideStatus {
+  SCHEDULED
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
