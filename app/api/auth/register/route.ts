@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma"
 import { hashPassword, createToken } from "@/lib/auth"
+import crypto from "crypto"
 
 const registerSchema = z.object({
   name: z.string().min(2),
@@ -27,6 +28,7 @@ export async function POST(request: Request) {
     })
 
     if (existingUser) {
+      console.log('User already exists:', existingUser.email || existingUser.phone);
       return NextResponse.json(
         { error: "User already exists" },
         { status: 400 }
@@ -36,13 +38,20 @@ export async function POST(request: Request) {
     // Hash password
     const hashedPassword = await hashPassword(validatedData.password)
 
+    // Generate verification token
+    const verificationToken = crypto.randomBytes(32).toString("hex")
+
     // Create user
     const user = await prisma.user.create({
       data: {
         ...validatedData,
         password: hashedPassword,
+        verified: false,
+        verificationToken,
       },
     })
+    console.log('User created:', user.email || user.phone);
+    console.log('Verification link:', `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/auth/verify?token=${verificationToken}`)
 
     // Create JWT token
     const token = await createToken(user.id)
